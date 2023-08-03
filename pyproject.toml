@@ -8,6 +8,8 @@ packages = [{include = "13_0_skypro_poetry"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+requests = "^2.31.0"
+pytest = "^7.4.0"
 
 
 [build-system]
