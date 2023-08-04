@@ -3,7 +3,7 @@
 
 import os
 
-print(os.getenv('USER_PASSWORD'))
+print(os.getenv('EXCHANGE_RATE_API_KEY'))
 # или
 print(os.environ.get('USERLOGIN'))
 print(os.getenv('USERPROFILE'))
