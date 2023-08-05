@@ -10,6 +10,7 @@ packages = [{include = "13_0_skypro_poetry"}]
 python = "^3.11"
 requests = "^2.31.0"
 pytest = "^7.4.0"
+coverage = "^7.2.7"
 
 
 [build-system]
