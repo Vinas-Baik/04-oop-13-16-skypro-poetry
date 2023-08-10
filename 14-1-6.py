@@ -37,6 +37,24 @@ class MyContext:
     def __exit__(self, type, value, traceback):
         print("Выход из класса - Exiting context")
 
+
+# Напишите код, который создает контекстный менеджер, используя магические методы __enter__
+#  и __exit__, который будет перехватывать все исключения, которые возникают внутри контекста, и выводить на экран сообщение "An error occurred" при возникновении исключения.
+
+class MyContext1:
+
+    def __enter__(self):
+        return self
+
+def __exit__(self, type, value, traceback):
+
+    if type:
+        print("An error occurred")
+    return True
+
+
+#  НАЧАЛО ПРОГРАММЫ э
+#
 with MyContext():
     print("Просто так")
 
