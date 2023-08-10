@@ -29,5 +29,18 @@ class MyOpen:
         # исключение возникает. В простых примерах не используется.
         self.fp.close()
 
+
+class MyContext:
+    def __enter__(self):
+        print("Вход в класс - Entering context")
+
+    def __exit__(self, type, value, traceback):
+        print("Выход из класса - Exiting context")
+
+with MyContext():
+    print("Просто так")
+
+print()
+
 with MyOpen('text.txt', 'r') as fp:  # Открываем файл
     print(fp.read())  # Читаем файл
