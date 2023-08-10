@@ -64,6 +64,28 @@ def print_class(list: 'TodoList'):
     print(list.__class__.__name__)
     print()
 
+class TL:
+
+    def __init__(self, tasks):
+        self.__tasks = tasks
+
+    @property
+    def tasks(self):
+        return self.__tasks
+
+    def __add__(self, other):
+        next_list = self.__tasks + other.tasks
+        return next_list
+
+    def __str__(self):
+        return f'{self.__tasks}'
+
+
+print('От Глеба:')
+temp_gleb = TL(TL([1,2]) + TL ([3,4]))
+print(temp_gleb)
+print(temp_gleb.__class__.__name__)
+print('-----')
 
 list1 = TodoList(['task1', 'task2'])
 print_class(list1)
