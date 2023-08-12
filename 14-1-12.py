@@ -51,15 +51,23 @@ class MyOpen:
         self.__mode = mode
 
     def __enter__(self):
-        print(f'Файл {self.__filename} был открыт')
-        self.__start = perf_counter()
-        self.fp = open(self.__filename, self.__mode)
-        return self.fp
+        try:
+            self.fp = open(self.__filename, self.__mode)
+            print(f'Файл {self.__filename} был открыт')
+            self.__start = perf_counter()
+            return self.fp
+        except FileNotFoundError:
+            return None
+
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.fp.close()
-        self.__start = perf_counter() - self.__start
-        print(f'Файл был открыт {self.__start} секунд и теперь успешно закрыт.')
+
+        # print(exc_tb, exc_val, exc_type)
+        if fp:
+            self.fp.close()
+            self.__start = perf_counter() - self.__start
+            print(f'Файл был открыт {self.__start} секунд и теперь успешно закрыт.')
+
 
 def print_class(list: 'TodoList'):
     print(list)
@@ -84,35 +92,48 @@ class TL:
         return f'{self.__tasks}'
 
 
-print('От Глеба:')
-temp_gleb = TL(TL([1,2]) + TL ([3,4]))
-print(temp_gleb)
-print(temp_gleb.__class__.__name__)
-print('-----')
-
-list1 = TodoList(['task1', 'task2'])
-print_class(list1)
-
-list2 = TodoList(['task3', 'task4'])
-print_class(list2)
-
-list3 = list1 + list2
-print_class(list3)
-
-# ----------------
-
-x = ReIterator([8, 9, 10, 1, 2, 3, 4])
-for i in x:
-    print(i)
-
-print(f'Длина списка - {len(x)}')
-print()
+# print('От Глеба:')
+# temp_gleb = TL(TL([1,2]) + TL ([3,4]))
+# print(temp_gleb)
+# print(temp_gleb.__class__.__name__)
+# print('-----')
 #
+# list1 = TodoList(['task1', 'task2'])
+# print_class(list1)
+#
+# list2 = TodoList(['task3', 'task4'])
+# print_class(list2)
+#
+# list3 = list1 + list2
+# print_class(list3)
+#
+# # ----------------
+#
+# x = ReIterator([8, 9, 10, 1, 2, 3, 4])
+# for i in x:
+#     print(i)
+#
+# print(f'Длина списка - {len(x)}')
+# print()
+# #
 # # -------------------
 #
 with MyOpen('text.txt', 'r') as fp:
-    content = fp.read()
-    print('Чтение данных 2 секунды...')
-    sleep(2)
+    if fp:
+        content = fp.read()
+        print('Чтение данных 2 секунды...')
+        sleep(2)
+    else:
+        print('файла нет')
+
+print('Продолжение кода...')
+
+with MyOpen('text1.txt', 'r') as fp:
+    if fp:
+        content = fp.read()
+        print('Чтение данных 2 секунды...')
+        sleep(2)
+    else:
+        print('файла text1.txt нет')
 
 print('Продолжение кода...')
