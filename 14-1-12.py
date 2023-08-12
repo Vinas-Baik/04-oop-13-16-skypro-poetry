@@ -7,12 +7,15 @@ class TodoList:
         self.__tasks = tasks
 
     def __repr__(self):
-        return f'{self.__class__.__name__}([{", ".join([task for task in self.__tasks])}])'
+        # return f'{self.__class__.__name__}([{", ".join([task for task in self.__tasks])}])'
+        return (f'{self.__class__.__name__}({type(self.__tasks).__name__}['
+                f'{", ".join([type(task).__name__ for task in self.__tasks])}])')
+
     def __str__(self):
         return '\n'.join([task for task in self.__tasks])
 
-    def __add__(self, other: 'TodoList') -> 'TodoList':
-        return self.__tasks + other.__tasks
+    def __add__(self, other: 'TodoList'):
+        return TodoList(self.__tasks + other.__tasks)
 
     def __len__(self):
         return len(self.__tasks)
@@ -93,7 +96,7 @@ print_class(list1)
 list2 = TodoList(['task3', 'task4'])
 print_class(list2)
 
-list3 = TodoList(list1 + list2)
+list3 = list1 + list2
 print_class(list3)
 
 # ----------------
@@ -104,9 +107,9 @@ for i in x:
 
 print(f'Длина списка - {len(x)}')
 print()
-
-# -------------------
-
+#
+# # -------------------
+#
 with MyOpen('text.txt', 'r') as fp:
     content = fp.read()
     print('Чтение данных 2 секунды...')
