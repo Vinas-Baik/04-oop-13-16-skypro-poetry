@@ -24,7 +24,7 @@ class Summary:
         # print(f'{type_add}-> {temp_self} + {temp_other}')
 
         if temp_self != None and temp_other != None:
-            print(f'{type_add}-> {temp_other + temp_self}')
+            # print(f'{type_add}-> {temp_other + temp_self}')
             if type_oper == '+':
                 return Summary(temp_self + temp_other)
             elif type_oper == '-':
@@ -53,15 +53,12 @@ class Summary:
     def __rmul__(self, other):
         return self.my_add(self, other, 'умножения', '*')
 
-
-
-
 s1 = Summary()
 s2 = Summary(5)
 s3 = Summary(10)
 
 try:
-    s4 = s2 * s2 * 2 + s1 + 100.012 - 10.002 * '10'
+    s4 = s2 * s2 * 2 + s1 + 100.012 - 10.002 * 10
     print(s4.arg)
 except ValueError as v_err:
     print(v_err.args)
