@@ -1,19 +1,15 @@
 class Summary:
 
-    def __init__(self, arg=1, error_add=None):
+    def __init__(self, arg=1):
         self.arg = arg
-        self.error_add = error_add
 
     def my_add(self, var1, var2, type_add, type_oper):
         # print(f'{type_add}')
         # print(f'{type_add}-> {var1} + {var2}')
 
-        temp_error = None
-
         if isinstance(var1, int | float):
             temp_self = var1
         elif isinstance(var1, Summary):
-            temp_error = var1.error_add
             temp_self = var1.arg
         else:
             temp_self = None
@@ -21,26 +17,23 @@ class Summary:
         if isinstance(var2, int | float):
             temp_other = var2
         elif isinstance(var2, Summary):
-            if temp_error == None:
-                temp_error = var2.error_add
-
             temp_other = var2.arg
         else:
             temp_other = None
 
-        # print(f'{type_add}-> {temp_self} + {temp_other} ({temp_error})')
+        # print(f'{type_add}-> {temp_self} + {temp_other}')
 
-        if temp_self != None and temp_other != None and temp_error == None:
-            # print(f'{type_add}-> {temp_other + temp_self}')
+        if temp_self != None and temp_other != None:
+            print(f'{type_add}-> {temp_other + temp_self}')
             if type_oper == '+':
-                return Summary(temp_self + temp_other, temp_error)
+                return Summary(temp_self + temp_other)
             elif type_oper == '-':
-                return Summary(temp_self - temp_other, temp_error)
+                return Summary(temp_self - temp_other)
             elif type_oper == '*':
-                return Summary(temp_self * temp_other, temp_error)
+                return Summary(temp_self * temp_other)
         else:
             # print(f'{type_add}-> ошибка {type_add}')
-            return Summary(0, f'ошибка {type_add}')
+            raise ValueError(f'ошибка {type_add}')
 
     def __radd__(self, other):
         return self.my_add(self, other, 'сложения', '+')
@@ -67,15 +60,11 @@ s1 = Summary()
 s2 = Summary(5)
 s3 = Summary(10)
 
-# print(sum([s1, s2, s3]))
-# print(sum([s1, s2, 2, 10, 15, s1]))
-# print(s1 + s2 + s3)
-# print(10 + s1 + s1)
-
-s4 = s2 * s2 * 2 + s1 + 100.012 - 10.002
-
-
-if s4.error_add == None:
+try:
+    s4 = s2 * s2 * 2 + s1 + 100.012 - 10.002 * '10'
     print(s4.arg)
-else:
-    print(s4.error_add)
+except ValueError as v_err:
+    print(v_err.args)
+except TypeError as t_err:
+    print(t_err.args)
+
