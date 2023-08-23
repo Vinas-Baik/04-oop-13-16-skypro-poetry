@@ -29,6 +29,7 @@
 #     Описание: сделать классы зависимыми от абстрактных классов,
 #     а не от обычных классов.
 #     Подход к реализации: наследовать классы от абстрактных классов.
+#
 
 from abc import ABC, abstractmethod
 
@@ -53,6 +54,37 @@ class Order:
   return '\n'.join(f'{item}, стоимостью {price} руб. в количестве {quantitie} шт.'
                    for item, quantitie, price in zip(self.items, self.quantities, self.prices))
 
+class Authorizer(ABC):
+ @abstractmethod
+ def is_authorized(self) -> bool:
+  pass
+
+
+class AuthorizerSMS(Authorizer):
+
+ def __init__(self):
+  self.authorized = False
+
+ def verify_code(self, code):
+  print(f"Верификация SMS кода {code}")
+  self.authorized = True
+
+ def is_authorized(self) -> bool:
+  return self.authorized
+
+
+class AuthorizerRobot(Authorizer):
+
+ def __init__(self):
+  self.authorized = False
+
+ def not_a_robot(self):
+  self.authorized = True
+
+ def is_authorized(self) -> bool:
+  return self.authorized
+
+
 class PaymentProcessor(ABC):
 
  @abstractmethod
@@ -60,29 +92,14 @@ class PaymentProcessor(ABC):
   pass
 
 
-class PaymentProcessorSMS(PaymentProcessor):
+class DebitPaymentProcessor(PaymentProcessor):
 
- @abstractmethod
- def pay(self, order):
-  pass
-
- @abstractmethod
- def auth_sms(self, code):
-  pass
-
-
-class DebitPaymentProcessor(PaymentProcessorSMS):
-
- def __init__(self, security_code):
+ def __init__(self, security_code, authorizer: Authorizer):
   self.security_code = security_code
-  self.verified = False
-
- def auth_sms(self,):
-  print(f"Верификация SMS кода {self.security_code}")
-  self.verified = True
+  self.authorizer = authorizer
 
  def pay(self, order):
-  if not self.verified:
+  if not self.authorizer.is_authorized():
    raise Exception("Не авторизован")
   print("Обработка дебетового типа платежа")
   print(f"Проверка кода безопасности: {self.security_code}")
@@ -100,23 +117,18 @@ class CreditPaymentProcessor(PaymentProcessor):
   order.status = "paid"
 
 
-class PaypalPaymentProcessor(PaymentProcessorSMS):
+class PaypalPaymentProcessor(PaymentProcessor):
 
- def __init__(self, email_address):
+ def __init__(self, email_address, authorizer: Authorizer):
   self.email_address = email_address
-  self.verified = False
-
- def auth_sms(self):
-  print(f"Верификация почты {self.email_address}")
-  self.verified = True
+  self.authorizer = authorizer
 
  def pay(self, order):
-  if not self.verified:
+  if not self.authorizer.is_authorized():
    raise Exception("Не авторизован")
   print("Обработка paypal платежа")
   print(f"Использование адреса электронной почты: {self.email_address}")
   order.status = "paid"
-
 
 # Создаем заказ
 order = Order()
@@ -128,29 +140,9 @@ order.add_item("USB-кабель", 250, 2)
 print(order)
 print(f'Общая сумма заказа = {order.total_price()} руб.')
 # Оплачиваем заказ
-# try:
-#  order.pay("debit", "0372846")
-# except Exception as t_err:
-#  print(t_err)
-# try:
-#   order.pay("debit_1", "0372846")
-# except Exception as t_err:
-#  print(t_err)
 
-processor = DebitPaymentProcessor("0372846")
-try:
- processor.pay(order)
-except Exception:
- processor.auth_sms()
- processor.pay(order)
-
-
-processor = CreditPaymentProcessor("7383903")
+authorizer = AuthorizerRobot()
+# authorizer.verify_code(465839)
+authorizer.not_a_robot()
+processor = PaypalPaymentProcessor("hi@company.com", authorizer)
 processor.pay(order)
-
-processor = PaypalPaymentProcessor("hi@company.com")
-try:
- processor.pay(order)
-except Exception:
- processor.auth_sms()
- processor.pay(order)
