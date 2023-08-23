@@ -4,6 +4,16 @@
 #     Описание: каждый класс должен иметь только одну зону ответственности.
 #     Подход к реализации: выделите зоны ответственности в отдельные классы.
 #
+# O - Принцип открытости/закрытости (Open/Closed)
+#     Описание: программные сущности (классы, модули, функции и т. п.) должны
+#     быть открыты для расширения, но закрыты для изменения.
+#     Подход к реализации: используйте абстрактные классы.
+#     Они могут определить, какие подклассы требуются,
+#     и усилить принцип единой ответственности, разделив обязанности кода.
+#
+#
+
+
 # Есть существующий код системы продаж, представленный классом Order (Заказ).
 #
 # В этом классе содержатся:
@@ -15,6 +25,8 @@
 # добавления товара в заказ (add_item)
 # подсчета стоимости заказа (total_price)
 # оплаты заказа (pay)
+
+from abc import ABC, abstractmethod
 
 class Order:
 
@@ -49,16 +61,26 @@ class Order:
  #  else:
  #   raise Exception(f"Неизвестный способ оплаты: {payment_type}")
 
-class PaymentProcessor:
- def pay_debit(self, order, security_code):
+class PaymentProcessor(ABC):
+
+ @abstractmethod
+ def pay(self, order, security_code):
+  pass
+
+
+class DebitPaymentProcessor(PaymentProcessor):
+ def pay(self, order, security_code):
   print("Обработка дебетового типа платежа")
   print(f"Проверка кода безопасности: {security_code}")
   order.status = "paid"
 
- def pay_credit(self, order, security_code):
+
+class CreditPaymentProcessor(PaymentProcessor):
+ def pay(self, order, security_code):
   print("Обработка кредитного типа платежа")
   print(f"Проверка кода безопасности: {security_code}")
   order.status = "paid"
+
 
 # Создаем заказ
 order = Order()
