@@ -37,18 +37,28 @@ class Order:
   return '\n'.join(f'{item}, стоимостью {price} руб. в количестве {quantitie} шт.'
                    for item, quantitie, price in zip(self.items, self.quantities, self.prices))
 
- def pay(self, payment_type, security_code):
-  if payment_type.lower().strip() == "debit":
-   print("Обработка дебетового типа платежа")
-   print(f"Проверка кода безопасности: {security_code}")
-   self.status = "paid"
-  elif payment_type.lower().strip() == "credit":
-   print("Обработка кредитного типа платежа")
-   print(f"Проверка кода безопасности: {security_code}")
-   self.status = "paid"
-  else:
-   raise Exception(f"Неизвестный способ оплаты: {payment_type}")
+ # def pay(self, payment_type, security_code):
+ #  if payment_type.lower().strip() == "debit":
+ #   print("Обработка дебетового типа платежа")
+ #   print(f"Проверка кода безопасности: {security_code}")
+ #   self.status = "paid"
+ #  elif payment_type.lower().strip() == "credit":
+ #   print("Обработка кредитного типа платежа")
+ #   print(f"Проверка кода безопасности: {security_code}")
+ #   self.status = "paid"
+ #  else:
+ #   raise Exception(f"Неизвестный способ оплаты: {payment_type}")
 
+class PaymentProcessor:
+ def pay_debit(self, order, security_code):
+  print("Обработка дебетового типа платежа")
+  print(f"Проверка кода безопасности: {security_code}")
+  order.status = "paid"
+
+ def pay_credit(self, order, security_code):
+  print("Обработка кредитного типа платежа")
+  print(f"Проверка кода безопасности: {security_code}")
+  order.status = "paid"
 
 # Создаем заказ
 order = Order()
@@ -60,11 +70,15 @@ order.add_item("USB-кабель", 250, 2)
 print(order)
 print(f'Общая сумма заказа = {order.total_price()} руб.')
 # Оплачиваем заказ
-try:
- order.pay("debit", "0372846")
-except Exception as t_err:
- print(t_err)
-try:
-  order.pay("debit_1", "0372846")
-except Exception as t_err:
- print(t_err)
+# try:
+#  order.pay("debit", "0372846")
+# except Exception as t_err:
+#  print(t_err)
+# try:
+#   order.pay("debit_1", "0372846")
+# except Exception as t_err:
+#  print(t_err)
+
+processor = PaymentProcessor()
+processor.pay_debit(order, "0372846")
+processor.pay_credit(order, "7383903")
