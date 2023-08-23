@@ -18,8 +18,13 @@
 #     без возникновения ошибок в программе.
 #     Подход к реализации: используйте аргументы конструктора,
 #     чтобы обеспечить гибкость наследования.
-
-
+#
+# I - Принцип разделения интерфейсов (Interface Segregation)
+#     Описание: сделайте интерфейсы (родительские абстрактные классы) более
+#     конкретными, а не общими.
+#     Подход к реализации: при необходимости создайте дополнительные
+#     интерфейсы (классы).
+#
 
 from abc import ABC, abstractmethod
 
@@ -44,19 +49,37 @@ class Order:
   return '\n'.join(f'{item}, стоимостью {price} руб. в количестве {quantitie} шт.'
                    for item, quantitie, price in zip(self.items, self.quantities, self.prices))
 
-
 class PaymentProcessor(ABC):
 
  @abstractmethod
  def pay(self, order):
   pass
 
-class DebitPaymentProcessor(PaymentProcessor):
+
+class PaymentProcessorSMS(PaymentProcessor):
+
+ @abstractmethod
+ def pay(self, order):
+  pass
+
+ @abstractmethod
+ def auth_sms(self, code):
+  pass
+
+
+class DebitPaymentProcessor(PaymentProcessorSMS):
 
  def __init__(self, security_code):
   self.security_code = security_code
+  self.verified = False
+
+ def auth_sms(self,):
+  print(f"Верификация SMS кода {self.security_code}")
+  self.verified = True
 
  def pay(self, order):
+  if not self.verified:
+   raise Exception("Не авторизован")
   print("Обработка дебетового типа платежа")
   print(f"Проверка кода безопасности: {self.security_code}")
   order.status = "paid"
@@ -73,12 +96,19 @@ class CreditPaymentProcessor(PaymentProcessor):
   order.status = "paid"
 
 
-class PaypalPaymentProcessor(PaymentProcessor):
+class PaypalPaymentProcessor(PaymentProcessorSMS):
 
  def __init__(self, email_address):
   self.email_address = email_address
+  self.verified = False
+
+ def auth_sms(self):
+  print(f"Верификация почты {self.email_address}")
+  self.verified = True
 
  def pay(self, order):
+  if not self.verified:
+   raise Exception("Не авторизован")
   print("Обработка paypal платежа")
   print(f"Использование адреса электронной почты: {self.email_address}")
   order.status = "paid"
@@ -104,9 +134,19 @@ print(f'Общая сумма заказа = {order.total_price()} руб.')
 #  print(t_err)
 
 processor = DebitPaymentProcessor("0372846")
-processor.pay(order)
+try:
+ processor.pay(order)
+except Exception:
+ processor.auth_sms()
+ processor.pay(order)
+
+
 processor = CreditPaymentProcessor("7383903")
 processor.pay(order)
 
 processor = PaypalPaymentProcessor("hi@company.com")
-processor.pay(order)
+try:
+ processor.pay(order)
+except Exception:
+ processor.auth_sms()
+ processor.pay(order)
